@@ -8,7 +8,7 @@ env:
 
 jobs:
 
-  build-nginx-ceam:
+  build-nginx:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -30,79 +30,12 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.NGINX_IMAGE }}
           tags: |
-            type=raw,value=ceam
+            type=raw,value=${{ github.ref_name }}-${{ github.sha }}
 
       - name: Build and push Cyanweb Nginx Docker image
         uses: docker/build-push-action@v2
         with:
           context: .
-          build-args: config=nginx_ceamdev.conf
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-  build-nginx-epa:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v1
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.NGINX_IMAGE }}
-          tags: |
-            type=raw,value=epa
-
-      - name: Build and push Cyanweb Nginx Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          build-args: config=nginx_epa_aws_ssl.conf
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-  build-nginx-qedlinuxapi-stg:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v1
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.NGINX_IMAGE }}
-          tags: |
-            type=raw,value=qedlinuxapi-stg
-
-      - name: Build and push Cyanweb Nginx Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          build-args: config=nginx_qedlinuxapi-stg.conf
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
